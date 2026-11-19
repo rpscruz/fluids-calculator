@@ -1,0 +1,2596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPS/PSMID Pediatric Diarrhea & Maintenance Fluid Calculator</title>
+    <!-- Rounded Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@500;600&family=Plus+Jakarta+Sans:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-cream: #fdfbf7;
+            --card-white: #ffffff;
+            --text-main: #2b3440;
+            --text-muted: #6b7685;
+            --border-soft: #e8e4dc;
+
+            /* Soft Pastel Accents */
+            --mint-bg: #eaf8f1;
+            --mint-border: #bfe8d4;
+            --mint-accent: #1d8f5f;
+
+            --sky-bg: #ebf6fc;
+            --sky-border: #c2e3f7;
+            --sky-accent: #1978b5;
+
+            --lavender-bg: #f3effc;
+            --lavender-border: #d8ccf5;
+            --lavender-accent: #6849b8;
+
+            --peach-bg: #fff5eb;
+            --peach-border: #fbd8b4;
+            --peach-accent: #c46210;
+
+            --rose-bg: #fdf0f3;
+            --rose-border: #f7cad6;
+            --rose-accent: #be2b53;
+
+            --tier1-color: #6bc4f5;
+            --tier2-color: #9e87e8;
+            --tier3-color: #5ec99b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Quicksand', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--text-main);
+            min-height: 100dvh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 14px 12px 28px;
+        }
+
+        .app-card {
+            width: 100%;
+            max-width: 560px;
+            background: var(--card-white);
+            border: 1.5px solid var(--border-soft);
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 10px 28px -8px rgba(43, 52, 64, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .title-group h1 {
+            font-family: 'DynaPuff', 'Quicksand', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+
+        .title-group p {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .pill-badge {
+            background: var(--lavender-bg);
+            color: var(--lavender-accent);
+            border: 1px solid var(--lavender-border);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        /* Patient Anthropometrics & Age Box */
+        .input-box {
+            background: var(--bg-cream);
+            border: 1.5px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-top-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.66rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .weight-input, .mini-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            outline: none;
+            min-width: 0;
+        }
+
+        .mini-input {
+            font-size: 1.15rem;
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 4px 8px;
+        }
+
+        .weight-input::placeholder, .mini-input::placeholder {
+            color: #b4bcc7;
+            font-size: 1rem;
+        }
+
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .unit-toggle {
+            display: inline-flex;
+            background: #edeae2;
+            padding: 3px;
+            border-radius: 11px;
+            flex-shrink: 0;
+        }
+
+        .unit-btn {
+            border: none;
+            background: transparent;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.16s ease;
+        }
+
+        .unit-btn.active {
+            background: var(--card-white);
+            color: var(--text-main);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Age Group & Height Sub-row */
+        .patient-meta-row {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 10px;
+            border-top: 1px dashed var(--border-soft);
+            padding-top: 8px;
+            align-items: end;
+        }
+
+        .age-pills {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            background: #edeae2;
+            padding: 3px;
+            border-radius: 11px;
+        }
+
+        .age-btn {
+            border: none;
+            background: transparent;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 5px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.16s ease;
+            text-align: center;
+        }
+
+        .age-btn.active {
+            background: var(--card-white);
+            color: var(--text-main);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+        }
+
+        .secondary-readout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.71rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .secondary-readout strong {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        /* Collapsible / Compact Section Cards */
+        .section-card {
+            background: #faf8f4;
+            border: 1.5px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-title {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-sub {
+            font-size: 0.69rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .toggle-chip {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            color: var(--text-muted);
+        }
+
+        /* Table 1 Clinical Assessment Checklist */
+        .signs-table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-soft);
+            background: var(--card-white);
+        }
+
+        .signs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.71rem;
+        }
+
+        .signs-table th {
+            padding: 6px 7px;
+            text-align: left;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .signs-table th.col-none { background: var(--mint-bg); color: var(--mint-accent); }
+        .signs-table th.col-mild { background: var(--peach-bg); color: var(--peach-accent); }
+        .signs-table th.col-sev  { background: var(--rose-bg); color: var(--rose-accent); }
+
+        .signs-table td {
+            padding: 5px 6px;
+            border-bottom: 1px dashed #ece8df;
+            vertical-align: top;
+        }
+
+        .signs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .sign-param {
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            width: 22%;
+        }
+
+        .sign-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+            cursor: pointer;
+            line-height: 1.25;
+            font-weight: 600;
+            color: var(--text-main);
+            padding: 2px 3px;
+            border-radius: 6px;
+            transition: background 0.14s ease;
+        }
+
+        .sign-option:hover {
+            background: #f5f3ed;
+        }
+
+        .sign-option input[type="checkbox"] {
+            margin-top: 2px;
+            accent-color: var(--lavender-accent);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* Dehydration Classification Banner & Manual Override */
+        .severity-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            padding: 9px 11px;
+            border-radius: 14px;
+            border: 1.5px solid var(--mint-border);
+            background: var(--mint-bg);
+            transition: all 0.2s ease;
+        }
+
+        .severity-bar.mild {
+            border-color: var(--peach-border);
+            background: var(--peach-bg);
+        }
+
+        .severity-bar.severe {
+            border-color: var(--rose-border);
+            background: var(--rose-bg);
+        }
+
+        .severity-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .severity-diagnosis {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--mint-accent);
+        }
+
+        .severity-bar.mild .severity-diagnosis { color: var(--peach-accent); }
+        .severity-bar.severe .severity-diagnosis { color: var(--rose-accent); }
+
+        .severity-rule-note {
+            font-size: 0.69rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .override-pills {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.72);
+            padding: 3px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .sev-btn {
+            border: none;
+            background: transparent;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.67rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 4px 4px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .sev-btn.active {
+            background: var(--card-white);
+            color: var(--text-main);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+        }
+
+        .malnutrition-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .malnutrition-warn {
+            background: var(--rose-bg);
+            border: 1px solid var(--rose-border);
+            color: var(--rose-accent);
+            font-size: 0.69rem;
+            font-weight: 700;
+            padding: 6px 9px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        /* Computation & Criteria Checklists Grid */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .check-pill {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            border-radius: 11px;
+            padding: 6px 8px;
+            cursor: pointer;
+            font-size: 0.71rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.25;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .check-pill:has(input:checked) {
+            border-color: var(--lavender-border);
+            background: #fbf9ff;
+        }
+
+        .check-pill input[type="checkbox"] {
+            margin-top: 2px;
+            accent-color: var(--lavender-accent);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .check-pill span small {
+            display: block;
+            font-size: 0.64rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .maint-sub-checks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding-top: 4px;
+            border-top: 1px dashed var(--border-soft);
+        }
+
+        .mini-check {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            border-radius: 999px;
+            padding: 4px 9px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .mini-check input {
+            accent-color: var(--sky-accent);
+            cursor: pointer;
+        }
+
+        /* Primary Output Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+        }
+
+        .stat-card {
+            border-radius: 16px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stat-card.deficit {
+            background: var(--peach-bg);
+            border: 1.5px solid var(--peach-border);
+        }
+
+        .stat-card.rehydration {
+            background: var(--rose-bg);
+            border: 1.5px solid var(--rose-border);
+        }
+
+        .stat-card.daily {
+            background: var(--sky-bg);
+            border: 1.5px solid var(--sky-border);
+        }
+
+        .stat-card.hourly {
+            background: var(--mint-bg);
+            border: 1.5px solid var(--mint-border);
+        }
+
+        .stat-label {
+            font-size: 0.66rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .stat-card.deficit .stat-label { color: var(--peach-accent); }
+        .stat-card.rehydration .stat-label { color: var(--rose-accent); }
+        .stat-card.daily .stat-label { color: var(--sky-accent); }
+        .stat-card.hourly .stat-label { color: var(--mint-accent); }
+
+        .stat-value {
+            margin: 3px 0 2px;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .stat-value .num {
+            font-size: 1.32rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--text-main);
+        }
+
+        .stat-value .unit {
+            font-size: 0.71rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .stat-sub {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            line-height: 1.25;
+        }
+
+        /* Rehydration Split & Ongoing Loss Box */
+        .detail-box {
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            border-radius: 12px;
+            padding: 8px 10px;
+            font-size: 0.73rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed #ece8df;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .detail-row strong {
+            color: var(--text-main);
+        }
+
+        .stool-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stool-input {
+            width: 48px;
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 7px;
+            border: 1px solid var(--border-soft);
+            background: var(--bg-cream);
+        }
+
+        /* Tier Stacked Progress Bar & Maintenance Comparison Table */
+        .stacked-bar {
+            width: 100%;
+            height: 9px;
+            background: #e9e5dc;
+            border-radius: 999px;
+            overflow: hidden;
+            display: flex;
+            gap: 2px;
+        }
+
+        .bar-seg {
+            height: 100%;
+            transition: width 0.25s ease;
+        }
+
+        .seg-1 { background: var(--tier1-color); }
+        .seg-2 { background: var(--tier2-color); }
+        .seg-3 { background: var(--tier3-color); }
+        .seg-4 { background: #f5a36b; }
+
+        .bracket-track {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+
+        .bracket-pill {
+            background: var(--card-white);
+            border: 1.5px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 5px 4px;
+            text-align: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .bracket-pill.active {
+            background: var(--lavender-bg);
+            border-color: var(--lavender-border);
+            color: var(--lavender-accent);
+            box-shadow: 0 2px 6px rgba(104, 73, 184, 0.12);
+        }
+
+        .bracket-pill span {
+            display: block;
+            font-size: 0.62rem;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .bsa-pipeline {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1.2fr;
+            align-items: center;
+            gap: 5px;
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            border-radius: 12px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .bsa-step {
+            background: var(--bg-cream);
+            border: 1px solid var(--border-soft);
+            border-radius: 9px;
+            padding: 5px 4px;
+        }
+
+        .bsa-step .s-lbl {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .bsa-step .s-val {
+            display: block;
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 1px;
+        }
+
+        .bsa-arrow {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--sky-accent);
+        }
+
+        .split-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.64rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.73rem;
+        }
+
+        .breakdown-table th {
+            text-align: left;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .breakdown-table th.right,
+        .breakdown-table td.right {
+            text-align: right;
+        }
+
+        .breakdown-table td {
+            padding: 5px 0;
+            font-weight: 600;
+            color: var(--text-main);
+            border-bottom: 1px dashed #ece8df;
+            vertical-align: middle;
+        }
+
+        .tier-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .formula-hint {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .breakdown-table tr.total-row td {
+            border-bottom: none;
+            border-top: 1.5px solid var(--border-soft);
+            padding-top: 6px;
+            padding-bottom: 0;
+            font-weight: 700;
+            font-size: 0.78rem;
+        }
+
+        .method-compare-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+            gap: 7px;
+        }
+
+        .method-box {
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            border-radius: 12px;
+            padding: 8px 10px;
+        }
+
+        .method-box .m-title {
+            font-size: 0.67rem;
+            font-weight: 700;
+            color: var(--sky-accent);
+            text-transform: uppercase;
+        }
+
+        .method-box .m-val {
+            font-size: 0.96rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 2px 0;
+        }
+
+        .method-box .m-sub {
+            font-size: 0.66rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Post-Resuscitation Orders Checklist */
+        .order-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-main);
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 6px 9px;
+            cursor: pointer;
+        }
+
+        .order-item input {
+            margin-top: 2px;
+            accent-color: var(--mint-accent);
+            cursor: pointer;
+        }
+
+        /* Action Footer */
+        .footer-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .copy-btn {
+            flex: 1;
+            border: 1.5px solid var(--lavender-border);
+            background: var(--lavender-bg);
+            color: var(--lavender-accent);
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 10px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .copy-btn:hover {
+            background: #eae2fa;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .copy-btn.copied {
+            background: var(--mint-bg);
+            border-color: var(--mint-border);
+            color: var(--mint-accent);
+        }
+
+        .clear-btn {
+            border: 1.5px solid var(--border-soft);
+            background: var(--bg-cream);
+            color: var(--text-muted);
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 10px 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .clear-btn:hover {
+            color: var(--text-main);
+            border-color: #d5cfc3;
+        }
+
+        /* Subtabs & PPS 2024 Unique Condition Styles */
+        .subtab-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            background: #edeae2;
+            padding: 3px;
+            border-radius: 12px;
+        }
+
+        .subtab-btn {
+            border: none;
+            background: transparent;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.67rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 6px 4px;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.16s ease;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .subtab-btn.active {
+            background: var(--card-white);
+            color: var(--text-main);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+        }
+
+        .mini-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+        }
+
+        .mini-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .tiny-input {
+            width: 100%;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 4px 7px;
+            border-radius: 9px;
+            border: 1px solid var(--border-soft);
+            background: var(--card-white);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .tiny-select {
+            width: 100%;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 5px 7px;
+            border-radius: 9px;
+            border: 1px solid var(--border-soft);
+            background: var(--card-white);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .iwl-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .iwl-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            background: var(--card-white);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 5px 7px;
+            font-size: 0.69rem;
+            font-weight: 700;
+        }
+
+        .iwl-item label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .iwl-num {
+            width: 44px;
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 3px;
+            border-radius: 6px;
+            border: 1px solid var(--border-soft);
+            background: var(--bg-cream);
+        }
+
+        .eqn-banner {
+            background: var(--sky-bg);
+            border: 1px solid var(--sky-border);
+            border-radius: 11px;
+            padding: 7px 9px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.35;
+        }
+
+        .cap-alert {
+            background: var(--peach-bg);
+            border: 1px solid var(--peach-border);
+            color: var(--peach-accent);
+            font-size: 0.69rem;
+            font-weight: 700;
+            padding: 6px 9px;
+            border-radius: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 440px) {
+            .input-top-grid, .patient-meta-row, .checklist-grid, .summary-grid, .mini-grid-2, .mini-grid-3, .iwl-grid {
+                grid-template-columns: 1fr;
+            }
+            .override-pills, .subtab-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="app-card">
+        <!-- Header -->
+        <header class="header">
+            <div class="title-group">
+                <h1>Pediatric Diarrhea &amp; Fluids</h1>
+                <p>PPS 2024 2nd Ed. &amp; CPG v2 &middot; Parenteral &amp; Maintenance</p>
+            </div>
+            <span class="pill-badge">PPS 2024</span>
+        </header>
+
+        <!-- Weight, Age Group, Sex & Height Section -->
+        <section class="input-box">
+            <div class="input-top-grid">
+                <div>
+                    <span class="field-label">Patient Weight (kg)</span>
+                    <div class="input-row">
+                        <input
+                            type="number"
+                            id="weightInput"
+                            class="weight-input"
+                            value="12"
+                            min="0"
+                            max="300"
+                            step="0.1"
+                            inputmode="decimal"
+                            placeholder="Weight..."
+                            aria-label="Patient weight in kilograms"
+                        >
+                        <span style="font-size:0.8rem;font-weight:700;color:var(--text-muted);padding-right:4px;">kg</span>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="field-label">Height (Optional for BSA)</span>
+                    <div class="input-row">
+                        <input
+                            type="number"
+                            id="heightInput"
+                            class="mini-input"
+                            value="86"
+                            min="0"
+                            max="250"
+                            step="0.5"
+                            inputmode="decimal"
+                            placeholder="cm"
+                            aria-label="Patient height in centimeters"
+                        >
+                        <span style="font-size:0.75rem;font-weight:700;color:var(--text-muted);">cm</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="patient-meta-row">
+                <div>
+                    <span class="field-label">Age Group &amp; Sex (PPS 2024)</span>
+                    <div class="age-pills" role="group" aria-label="Age group">
+                        <button type="button" id="ageInfant" class="age-btn" onclick="setAgeGroup('infant')">&lt;12 mos</button>
+                        <button type="button" id="ageChild" class="age-btn active" onclick="setAgeGroup('child')">1–10 yrs</button>
+                        <button type="button" id="ageAdol" class="age-btn" onclick="setAgeGroup('adolescent')">&gt;10 yrs</button>
+                    </div>
+                </div>
+                <div class="secondary-readout" style="flex-direction:column;align-items:flex-end;gap:3px;">
+                    <span id="convertedText"><strong>12.00 kg</strong></span>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span id="bsaReadout">BSA: 0.54 m&sup2;</span>
+                        <select id="sexSelect" class="tiny-select" style="width:auto;padding:2px 6px;font-size:0.68rem;" onchange="calculate()" aria-label="Patient sex for 24h max cap">
+                            <option value="male">Male (Max 2500 mL)</option>
+                            <option value="female">Female (Max 2000 mL)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. Table 1 Pediatric Signs of Dehydration Checklist -->
+        <section class="section-card">
+            <div class="section-header" onclick="toggleSection('signsBody', 'signsChip')">
+                <span class="section-title">1. Clinical Assessment Checklist (Table 1)</span>
+                <span class="toggle-chip" id="signsChip">Hide Signs</span>
+            </div>
+
+            <div id="signsBody" style="display:flex;flex-direction:column;gap:8px;">
+                <div class="signs-table-wrap">
+                    <table class="signs-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th class="col-none">No Signs</th>
+                                <th class="col-mild">Mild to Moderate</th>
+                                <th class="col-sev">Severe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="sign-param">Condition</td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="none" data-param="Condition" value="Well, alert" onchange="calculate()">Well, alert</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="mild" data-param="Condition" value="Restless, irritable" onchange="calculate()">Restless, irritable</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="severe" data-param="Condition" value="Lethargic or unconscious" onchange="calculate()">Lethargic / unconscious</label></td>
+                            </tr>
+                            <tr>
+                                <td class="sign-param">Thirst</td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="none" data-param="Thirst" value="Drinks normally, not thirsty" onchange="calculate()">Drinks normally, not thirsty</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="mild" data-param="Thirst" value="Thirsty, drinks eagerly" onchange="calculate()">Thirsty, drinks eagerly</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="severe" data-param="Thirst" value="Drinks poorly, or not able to drink" onchange="calculate()">Drinks poorly / unable</label></td>
+                            </tr>
+                            <tr>
+                                <td class="sign-param">Fontanel / Eyes</td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="none" data-param="Fontanel/Eyes" value="Normal" onchange="calculate()">Normal</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="mild" data-param="Fontanel/Eyes" value="Slightly depressed / sunken" onchange="calculate()">Slightly depressed / sunken</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="severe" data-param="Fontanel/Eyes" value="Sunken" onchange="calculate()">Sunken</label></td>
+                            </tr>
+                            <tr>
+                                <td class="sign-param">Tears</td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="none" data-param="Tears" value="Present" onchange="calculate()">Present</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="mild" data-param="Tears" value="Decreased" onchange="calculate()">Decreased</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="severe" data-param="Tears" value="Absent" onchange="calculate()">Absent</label></td>
+                            </tr>
+                            <tr>
+                                <td class="sign-param">Capillary Refill</td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="none" data-param="Capillary Refill" value="< 2 seconds" onchange="calculate()">&lt; 2 seconds</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="mild" data-param="Capillary Refill" value="2–3 seconds" onchange="calculate()">2–3 seconds</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="severe" data-param="Capillary Refill" value="> 3 seconds" onchange="calculate()">&gt; 3 seconds</label></td>
+                            </tr>
+                            <tr>
+                                <td class="sign-param">Respiration</td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="none" data-param="Respiration" value="Normal" onchange="calculate()">Normal</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="mild" data-param="Respiration" value="Normal to fast" onchange="calculate()">Normal to fast</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="severe" data-param="Respiration" value="Deep, may be fast" onchange="calculate()">Deep, may be fast</label></td>
+                            </tr>
+                            <tr>
+                                <td class="sign-param">Skin Pinch</td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="none" data-param="Skin Pinch" value="Goes back quickly" onchange="calculate()">Goes back quickly</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="mild" data-param="Skin Pinch" value="Goes back slowly (< 2 sec)" onchange="calculate()">Slowly (&lt; 2 sec)</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="severe" data-param="Skin Pinch" value="Goes back very slowly (> 2 sec)" onchange="calculate()">Very slowly (&gt; 2 sec)</label></td>
+                            </tr>
+                            <tr>
+                                <td class="sign-param">Urine Output</td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="none" data-param="Urine Output" value="Normal" onchange="calculate()">Normal</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="mild" data-param="Urine Output" value="Decreased" onchange="calculate()">Decreased</label></td>
+                                <td><label class="sign-option"><input type="checkbox" data-cat="severe" data-param="Urine Output" value="Minimal" onchange="calculate()">Minimal</label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Auto CPG Classification & Manual Override -->
+                <div id="severityBanner" class="severity-bar">
+                    <div class="severity-top">
+                        <div>
+                            <div class="severity-diagnosis" id="severityTitle">NO SIGNS OF DEHYDRATION</div>
+                            <div class="severity-rule-note" id="severitySubtitle">CPG Rule: &ge;2 signs required for Mild-Moderate or Severe classification.</div>
+                        </div>
+                        <div class="override-pills" role="group" aria-label="Dehydration classification mode">
+                            <button type="button" id="ovAuto" class="sev-btn active" onclick="setSeverityOverride('auto')">Auto</button>
+                            <button type="button" id="ovNone" class="sev-btn" onclick="setSeverityOverride('none')">No Signs</button>
+                            <button type="button" id="ovMild" class="sev-btn" onclick="setSeverityOverride('mild')">Mild-Mod</button>
+                            <button type="button" id="ovSevere" class="sev-btn" onclick="setSeverityOverride('severe')">Severe</button>
+                        </div>
+                    </div>
+
+                    <div class="malnutrition-row">
+                        <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;">
+                            <input type="checkbox" id="chkMalnutrition" onchange="calculate()">
+                            <span>Severe Malnutrition Present (Marasmus / Kwashiorkor)</span>
+                        </label>
+                        <button type="button" onclick="clearSigns()" style="border:none;background:none;color:var(--lavender-accent);font-family:inherit;font-size:0.68rem;font-weight:700;cursor:pointer;">Reset Signs</button>
+                    </div>
+                    <div id="malnutritionAlert" class="malnutrition-warn">
+                        CPG Caution: Clinical signs of dehydration may not be reliable in children with severe malnutrition.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Computation & Criteria Checklists -->
+        <section class="section-card">
+            <div class="section-header" onclick="toggleSection('criteriaBody', 'criteriaChip')">
+                <span class="section-title">2. Computation &amp; Criteria Checklist</span>
+                <span class="toggle-chip" id="criteriaChip">Hide Criteria</span>
+            </div>
+
+            <div id="criteriaBody" style="display:flex;flex-direction:column;gap:8px;">
+                <div class="checklist-grid">
+                    <label class="check-pill">
+                        <input type="checkbox" id="chkDeficit" checked onchange="calculate()">
+                        <span>Estimated Fluid Deficit<small>Table 1 % Body Weight</small></span>
+                    </label>
+                    <label class="check-pill">
+                        <input type="checkbox" id="chkRehydration" checked onchange="calculate()">
+                        <span>Rehydration Phase<small>Fig. 1 (75 mL/kg) / Fig. 2 (100 mL/kg)</small></span>
+                    </label>
+                    <label class="check-pill">
+                        <input type="checkbox" id="chkOngoing" checked onchange="calculate()">
+                        <span>Ongoing Stool Losses<small>ORS replacement per loose stool</small></span>
+                    </label>
+                    <label class="check-pill">
+                        <input type="checkbox" id="chkMaintenance" checked onchange="calculate()">
+                        <span>24-Hr Maintenance Fluids<small>PPS 2024 Part 1 (3.1.4) + IWL</small></span>
+                    </label>
+                    <label class="check-pill">
+                        <input type="checkbox" id="chkResusCap" checked onchange="calculate()">
+                        <span>Bolus, SBP Target &amp; 24h Cap<small>20 mL/kg, 5th %ile SBP, Max Cap</small></span>
+                    </label>
+                    <label class="check-pill">
+                        <input type="checkbox" id="chkUniqueCond" onchange="calculate()">
+                        <span>PPS 2024 Unique Conditions<small>DKA, Liver, AKI, TLS, Pneumonia</small></span>
+                    </label>
+                </div>
+
+                <!-- Sub-selector for Maintenance Methods -->
+                <div id="maintMethodsRow" class="maint-sub-checks">
+                    <span style="font-size:0.66rem;font-weight:700;color:var(--text-muted);align-self:center;">Maintenance Formulas:</span>
+                    <label class="mini-check">
+                        <input type="checkbox" id="mHolliday" checked onchange="calculate()"> Holliday-Segar (100-50-20 / 4-2-1)
+                    </label>
+                    <label class="mini-check">
+                        <input type="checkbox" id="mFinberg" checked onchange="calculate()"> Ludan / Mod. Finberg
+                    </label>
+                    <label class="mini-check">
+                        <input type="checkbox" id="mBsa" checked onchange="calculate()"> Crawford BSA (1500 mL/m&sup2;/d)
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Primary Output Summary Cards -->
+        <section class="summary-grid" id="primarySummaryGrid">
+            <div class="stat-card deficit" id="cardDeficit">
+                <span class="stat-label" id="deficitLabel">Est. Fluid Deficit</span>
+                <div class="stat-value">
+                    <span class="num" id="deficitVolDisplay">360</span>
+                    <span class="unit">mL</span>
+                </div>
+                <span class="stat-sub" id="deficitSubDisplay">Child (&ge;12m) Mild/No Signs: 30 mL/kg</span>
+            </div>
+
+            <div class="stat-card rehydration" id="cardRehydration">
+                <span class="stat-label" id="rehydLabel">Rehydration / Bolus</span>
+                <div class="stat-value">
+                    <span class="num" id="rehydVolDisplay">ORS Only</span>
+                    <span class="unit" id="rehydUnitDisplay"></span>
+                </div>
+                <span class="stat-sub" id="rehydSubDisplay">No dehydration: replace ongoing stool losses</span>
+            </div>
+
+            <div class="stat-card daily" id="cardDaily">
+                <span class="stat-label" id="dailyCardLabel">24-Hr Maintenance (H-S)</span>
+                <div class="stat-value">
+                    <span class="num" id="dailyTotalDisplay">1,100</span>
+                    <span class="unit">mL/day</span>
+                </div>
+                <span class="stat-sub" id="kcalDisplay">1,100 kcal/day equiv.</span>
+            </div>
+
+            <div class="stat-card hourly" id="cardHourly">
+                <span class="stat-label" id="hourlyCardLabel">Hourly Rate (4-2-1 Rule)</span>
+                <div class="stat-value">
+                    <span class="num" id="hourly421Display">44.0</span>
+                    <span class="unit">mL/hr</span>
+                </div>
+                <span class="stat-sub" id="hourlyExactDisplay">Exact 24h / 24: 45.8 mL/hr</span>
+            </div>
+        </section>
+
+        <!-- Active Rehydration Protocol & Ongoing Stool Loss Breakdown -->
+        <section class="section-card" id="protocolSection">
+            <div class="section-header">
+                <span class="section-title">Rehydration &amp; Ongoing Stool Losses</span>
+                <span class="pill-badge" id="protocolBadge">Outpatient / Plan A</span>
+            </div>
+            <div class="detail-box">
+                <div class="detail-row" id="rehydPhase1Row">
+                    <span id="phase1Label"><strong>Rehydration (No Signs):</strong> Reduced-osmolarity ORS</span>
+                    <strong id="phase1Val">No deficit bolus needed</strong>
+                </div>
+                <div class="detail-row hidden" id="rehydPhase2Row">
+                    <span id="phase2Label"><strong>Phase 2:</strong> LRS or 0.9% NaCl</span>
+                    <strong id="phase2Val">0 mL</strong>
+                </div>
+                <div class="detail-row" id="ongoingRow">
+                    <div>
+                        <div id="ongoingRuleText" style="font-weight:700;">100–200 mL ORS per loose stool (2–10 yrs)</div>
+                        <div class="stool-counter" style="margin-top:3px;">
+                            <span style="font-size:0.68rem;color:var(--text-muted);">Loose stools:</span>
+                            <input type="number" id="stoolCountInput" class="stool-input" value="3" min="0" max="100" step="1" oninput="calculate()">
+                        </div>
+                    </div>
+                    <strong id="ongoingTotalVal">300–600 mL</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- Formula Computation Breakdown Subtabs -->
+        <section class="section-card" id="maintenanceSection">
+            <div class="section-header">
+                <span class="section-title">Formula Computation Breakdown</span>
+                <span class="section-sub" id="tierSummaryLabel">10 + 2 + 0 kg</span>
+            </div>
+
+            <div class="subtab-bar" role="tablist" aria-label="Formula computation subtabs">
+                <button type="button" id="tabBtnHsIwl" class="subtab-btn active" onclick="setSubtab('hsIwl')">Holliday-Segar &amp; IWL</button>
+                <button type="button" id="tabBtnLudanBsa" class="subtab-btn" onclick="setSubtab('ludanBsa')">Ludan &amp; BSA</button>
+                <button type="button" id="tabBtnDeficit" class="subtab-btn" onclick="setSubtab('deficit')">Deficit &amp; Resus</button>
+                <button type="button" id="tabBtnUnique" class="subtab-btn" onclick="setSubtab('unique')">PPS 2024</button>
+            </div>
+
+            <!-- SUBTAB 1: Holliday-Segar + Statement 3.1.4.2 Insensible Water Loss Adjustments -->
+            <div id="subtabHsIwl" style="display:flex;flex-direction:column;gap:8px;">
+                <div id="hsTierWrapper" style="display:flex;flex-direction:column;gap:7px;">
+                    <div class="stacked-bar" aria-hidden="true">
+                        <div id="barSeg1" class="bar-seg seg-1" style="width: 83.3%;"></div>
+                        <div id="barSeg2" class="bar-seg seg-2" style="width: 16.7%;"></div>
+                        <div id="barSeg3" class="bar-seg seg-3" style="width: 0%;"></div>
+                    </div>
+
+                    <table class="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Holliday-Segar Tier</th>
+                                <th class="right">24h (100-50-20)</th>
+                                <th class="right">Hourly (4-2-1)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span class="tier-dot" style="background: var(--tier1-color);"></span>1st 10 kg
+                                    <span class="formula-hint" id="t1Hint">10.00 kg x 100 / x 4</span>
+                                </td>
+                                <td class="right" id="t1Daily">1,000 mL</td>
+                                <td class="right" id="t1Hourly">40.0 mL/hr</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="tier-dot" style="background: var(--tier2-color);"></span>2nd 10 kg
+                                    <span class="formula-hint" id="t2Hint">2.00 kg x 50 / x 2</span>
+                                </td>
+                                <td class="right" id="t2Daily">100 mL</td>
+                                <td class="right" id="t2Hourly">4.0 mL/hr</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="tier-dot" style="background: var(--tier3-color);"></span>&gt; 20 kg
+                                    <span class="formula-hint" id="t3Hint">0.00 kg x 20 / x 1</span>
+                                </td>
+                                <td class="right" id="t3Daily">0 mL</td>
+                                <td class="right" id="t3Hourly">0.0 mL/hr</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Baseline H-S Total</td>
+                                <td class="right" id="tableDailyTotal">1,100 mL/day</td>
+                                <td class="right" id="tableHourlyTotal">44.0 mL/hr</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PPS 2024 Statement 3.1.4.2 Insensible Water Loss Adjustments -->
+                <div class="detail-box">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>Insensible Water Loss Modifiers (PPS 3.1.4.2)</strong>
+                        <span id="iwlNetBadge" class="pill-badge" style="padding:2px 8px;">Net: +0%</span>
+                    </div>
+                    <div class="iwl-grid">
+                        <div class="iwl-item">
+                            <label><input type="checkbox" id="iwlHypervent" onchange="calculate()"> Hypervent (+20–30%)</label>
+                            <input type="number" id="iwlHyperventPct" class="iwl-num" value="25" min="20" max="30" step="1" oninput="calculate()">%
+                        </div>
+                        <div class="iwl-item">
+                            <label><input type="checkbox" id="iwlActInc" onchange="calculate()"> &uarr; Activity (+5–25%)</label>
+                            <input type="number" id="iwlActIncPct" class="iwl-num" value="15" min="5" max="25" step="1" oninput="calculate()">%
+                        </div>
+                        <div class="iwl-item">
+                            <label><input type="checkbox" id="iwlFever" onchange="calculate()"> Fever (+12%/&deg;C)</label>
+                            <span><input type="number" id="iwlFeverDeg" class="iwl-num" value="1" min="0" max="6" step="0.5" oninput="calculate()">&deg;C</span>
+                        </div>
+                        <div class="iwl-item">
+                            <label><input type="checkbox" id="iwlHumid" onchange="calculate()"> Humidified (-15–30%)</label>
+                            <input type="number" id="iwlHumidPct" class="iwl-num" value="20" min="15" max="30" step="1" oninput="calculate()">%
+                        </div>
+                        <div class="iwl-item">
+                            <label><input type="checkbox" id="iwlActDec" onchange="calculate()"> &darr; Activity (-5–25%)</label>
+                            <input type="number" id="iwlActDecPct" class="iwl-num" value="15" min="5" max="25" step="1" oninput="calculate()">%
+                        </div>
+                        <div class="iwl-item">
+                            <label><input type="checkbox" id="iwlHypotherm" onchange="calculate()"> Hypotherm (-5–15%)</label>
+                            <input type="number" id="iwlHypothermPct" class="iwl-num" value="10" min="5" max="15" step="1" oninput="calculate()">%
+                        </div>
+                        <div class="iwl-item" style="grid-column: 1 / -1;">
+                            <label><input type="checkbox" id="iwlSedation" onchange="calculate()"> Sedation (-5–25%)</label>
+                            <input type="number" id="iwlSedationPct" class="iwl-num" value="15" min="5" max="25" step="1" oninput="calculate()">%
+                        </div>
+                    </div>
+                    <div class="detail-row" style="margin-top:2px;">
+                        <span id="iwlCalcFormula">Adjusted H-S: 1,100 mL/d x (1 + 0%)</span>
+                        <strong id="iwlAdjustedResult">1,100 mL/day (45.8 mL/hr)</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUBTAB 2: Ludan (Modified Finberg) & Crawford BSA (PPS 3.1.4) -->
+            <div id="subtabLudanBsa" class="hidden" style="display:flex;flex-direction:column;gap:8px;">
+                <div class="method-compare-grid">
+                    <div class="method-box" id="boxHolliday">
+                        <div class="m-title">Holliday-Segar</div>
+                        <div class="m-val" id="cmpHsVal">1,100 mL/day</div>
+                        <div class="m-sub" id="cmpHsSub">44.0 mL/hr (4-2-1 rule)</div>
+                    </div>
+                    <div class="method-box" id="boxFinberg">
+                        <div class="m-title">Ludan / Mod. Finberg</div>
+                        <div class="m-val" id="cmpFlVal">900 mL/day</div>
+                        <div class="m-sub" id="cmpFlSub">11–20 kg: 75 mL/kg/day</div>
+                    </div>
+                    <div class="method-box" id="boxBsa">
+                        <div class="m-title">Crawford BSA (1500/m&sup2;)</div>
+                        <div class="m-val" id="cmpBsaVal">813 mL/day</div>
+                        <div class="m-sub" id="cmpBsaSub">33.9 mL/hr (BSA 0.54 m&sup2;)</div>
+                    </div>
+                </div>
+
+                <!-- Visual Ludan / Modified Finberg Weight-Bracket Breakdown -->
+                <div class="detail-box" style="gap:7px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>Ludan (Modified Finberg) Weight Bracket</strong>
+                        <span id="ludanActiveBadge" class="pill-badge" style="padding:2px 8px;">10–20 kg: 75 mL/kg</span>
+                    </div>
+
+                    <div class="bracket-track" aria-label="Ludan weight brackets">
+                        <div id="ludanBrk1" class="bracket-pill">3–10 kg<span>100 mL/kg</span></div>
+                        <div id="ludanBrk2" class="bracket-pill active">10–20 kg<span>75 mL/kg</span></div>
+                        <div id="ludanBrk3" class="bracket-pill">20–30 kg<span>50–60 mL/kg</span></div>
+                        <div id="ludanBrk4" class="bracket-pill">30–60 kg<span>40–50 mL/kg</span></div>
+                    </div>
+
+                    <table class="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Weight Bracket</th>
+                                <th class="right">Equation</th>
+                                <th class="right">24h / Hourly</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="ludanRow1">
+                                <td><span class="tier-dot" style="background: var(--tier1-color);"></span>3–10 kg</td>
+                                <td class="right" id="ludanEq1">&mdash;</td>
+                                <td class="right" id="ludanVal1">&mdash;</td>
+                            </tr>
+                            <tr id="ludanRow2">
+                                <td><span class="tier-dot" style="background: var(--tier2-color);"></span>10–20 kg</td>
+                                <td class="right" id="ludanEq2">12.00 kg &times; 75</td>
+                                <td class="right" id="ludanVal2">900 mL (37.5/h)</td>
+                            </tr>
+                            <tr id="ludanRow3">
+                                <td><span class="tier-dot" style="background: var(--tier3-color);"></span>20–30 kg</td>
+                                <td class="right" id="ludanEq3">&mdash;</td>
+                                <td class="right" id="ludanVal3">&mdash;</td>
+                            </tr>
+                            <tr id="ludanRow4">
+                                <td><span class="tier-dot" style="background: #f5a36b;"></span>30–60 kg</td>
+                                <td class="right" id="ludanEq4">&mdash;</td>
+                                <td class="right" id="ludanVal4">&mdash;</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Ludan Total</td>
+                                <td class="right" id="ludanRangeBound">Flat bracket rate</td>
+                                <td class="right" id="ludanTableTotal">900 mL/d (37.5/h)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Visual Crawford BSA Pipeline & Breakdown -->
+                <div class="detail-box" style="gap:7px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>Crawford BSA Computation (1500 mL/m&sup2;/day)</strong>
+                        <span id="bsaPctOfHsBadge" class="pill-badge" style="padding:2px 8px;background:var(--sky-bg);color:var(--sky-accent);border-color:var(--sky-border);">74% of H-S</span>
+                    </div>
+
+                    <div class="bsa-pipeline">
+                        <div class="bsa-step">
+                            <span class="s-lbl">Inputs</span>
+                            <span class="s-val" id="bsaStepIn">12 kg &times; 86 cm</span>
+                        </div>
+                        <span class="bsa-arrow">&rarr;</span>
+                        <div class="bsa-step">
+                            <span class="s-lbl">&radic;(W&times;H / 3600)</span>
+                            <span class="s-val" id="bsaStepVal">0.54 m&sup2;</span>
+                        </div>
+                        <span class="bsa-arrow">&rarr;</span>
+                        <div class="bsa-step" style="background:var(--sky-bg);border-color:var(--sky-border);">
+                            <span class="s-lbl" style="color:var(--sky-accent);">&times; 1500 mL/m&sup2;</span>
+                            <span class="s-val" id="bsaStepOut">813 mL/d (33.9/h)</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="stacked-bar" aria-hidden="true">
+                            <div id="bsaRatioBar" class="bar-seg seg-1" style="width: 74%;"></div>
+                        </div>
+                        <div class="split-bar-labels">
+                            <span id="bsaDetailText">BSA = sqrt((12.0 x 86.0) / 3600) = 0.54 m&sup2;</span>
+                            <span id="bsaVsHsLabel">vs. H-S 1,100 mL/d</span>
+                        </div>
+                    </div>
+                    <span style="font-size:0.65rem;color:var(--text-muted);font-weight:600;">
+                        PPS 3.1.4.1: Prefer BSA in critically ill, obese, AKI, CKD, malignancy, or severe sepsis.
+                    </span>
+                </div>
+            </div>
+
+            <!-- SUBTAB 3: Pre-Illness Weight, % Deficit, Split Schedules, Bolus, SBP & FO% -->
+            <div id="subtabDeficit" class="hidden" style="display:flex;flex-direction:column;gap:8px;">
+                <div class="mini-grid-3">
+                    <div>
+                        <span class="field-label">Pre-Illness Wt (kg)</span>
+                        <input type="number" id="preWtInput" class="tiny-input" value="12.7" min="0" max="300" step="0.1" oninput="calculate()">
+                    </div>
+                    <div>
+                        <span class="field-label">Known % Deficit (for Wt)</span>
+                        <input type="number" id="knownPctDefInput" class="tiny-input" value="6" min="0" max="25" step="0.5" oninput="calculate()">
+                    </div>
+                    <div>
+                        <span class="field-label">Age in Yrs (SBP 5th %ile)</span>
+                        <input type="number" id="ageYearsInput" class="tiny-input" value="3" min="0.1" max="18" step="0.5" oninput="calculate()">
+                    </div>
+                </div>
+
+                <!-- Visual Weight & % Deficit Equation Breakdown -->
+                <div class="detail-box" style="gap:7px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>Pre-Illness Weight &amp; % Fluid Deficit</strong>
+                        <span id="deficitPctBadge" class="pill-badge" style="padding:2px 8px;background:var(--peach-bg);color:var(--peach-accent);border-color:var(--peach-border);">5.5% Deficit</span>
+                    </div>
+
+                    <div>
+                        <div class="stacked-bar" aria-hidden="true">
+                            <div id="admWtBar" class="bar-seg seg-1" style="width: 94.5%;"></div>
+                            <div id="lossWtBar" class="bar-seg seg-4" style="width: 5.5%;"></div>
+                        </div>
+                        <div class="split-bar-labels">
+                            <span id="admWtBarLabel">Admission Wt: 12.00 kg (94.5%)</span>
+                            <span id="lossWtBarLabel">Water Loss: 0.70 kg (5.5%)</span>
+                        </div>
+                    </div>
+
+                    <table class="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th class="right">Formula Breakdown</th>
+                                <th class="right">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tier-dot" style="background: #f5a36b;"></span>% Deficit (Known Pre-Wt)</td>
+                                <td class="right" id="calcPctDeficitFormula">(12.7 - 12.0) / 12.7 &times; 100</td>
+                                <td class="right" id="calcPctDeficitOut">5.5%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-dot" style="background: var(--tier2-color);"></span>Derived Pre-Illness Wt</td>
+                                <td class="right" id="derivedPreWtFormula">12.0 &times; 100 / (100 - 6.0)</td>
+                                <td class="right" id="derivedPreWtOut">12.77 kg</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-dot" style="background: var(--tier1-color);"></span>Clinical Net Deficit</td>
+                                <td class="right" id="clinDefFormula">12.0 kg &times; 30 mL/kg</td>
+                                <td class="right" id="clinDefOut">360 mL</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Visual 24-Hour Split Rehydration (PPS 3.1.3.1 & 3.1.3.2) -->
+                <div class="detail-box" style="gap:7px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>24h Rehydration Split (Deficit + Maintenance)</strong>
+                        <span id="total24hDefMaintBadge" class="pill-badge" style="padding:2px 8px;background:var(--mint-bg);color:var(--mint-accent);border-color:var(--mint-border);">Total: 1,460 mL</span>
+                    </div>
+
+                    <div>
+                        <div class="stacked-bar" aria-hidden="true">
+                            <div id="split8hBar" class="bar-seg seg-2" style="width: 37.5%;"></div>
+                            <div id="split16hBar" class="bar-seg seg-3" style="width: 62.5%;"></div>
+                        </div>
+                        <div class="split-bar-labels">
+                            <span id="split8hBarLabel">1st 8h (50% Def + 1/3 Maint): 37.5%</span>
+                            <span id="split16hBarLabel">Next 16h (50% Def + 2/3 Maint): 62.5%</span>
+                        </div>
+                    </div>
+
+                    <table class="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Phase / Schedule</th>
+                                <th class="right">Volume Breakdown</th>
+                                <th class="right">Infusion Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tier-dot" style="background: var(--tier2-color);"></span>1st 8h (PPS 3.1.3.1)</td>
+                                <td class="right" id="split8hMath">180 + 367 = 547 mL</td>
+                                <td class="right" id="split8hRate">68.3 mL/hr</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-dot" style="background: var(--tier3-color);"></span>Next 16h (PPS 3.1.3.1)</td>
+                                <td class="right" id="split16hMath">180 + 733 = 913 mL</td>
+                                <td class="right" id="split16hRate">57.1 mL/hr</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-dot" style="background: var(--tier1-color);"></span>Rapid 6h AGE (3.1.3.2)</td>
+                                <td class="right" id="rapid6hMath">1/3 (1h): 120 mL + 2/3 (5–6h): 240 mL</td>
+                                <td class="right" id="rapid6hOut">120 &rarr; 40–48 mL/hr</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-dot" style="background: #f5a36b;"></span>Bolus &amp; 5th %ile SBP</td>
+                                <td class="right" id="bolusMath">20 mL/kg (max 60/kg/h = 720 mL)</td>
+                                <td class="right" id="bolusSbpOut">240 mL | SBP &ge; 76</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Fluid Overload % & 24-Hour Cap Check (PPS 5.1.4 & Oliguric p.60) -->
+                <div class="detail-box" style="gap:7px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>Fluid Overload % (FO%) &amp; 24h Volume Cap</strong>
+                        <label class="mini-check" style="padding:2px 8px;">
+                            <input type="checkbox" id="chkApply24hCap" checked onchange="calculate()"> Enforce 24h Cap
+                        </label>
+                    </div>
+                    <div class="mini-grid-2">
+                        <div>
+                            <span class="field-label">24h Fluid Input (L)</span>
+                            <input type="number" id="foInputL" class="tiny-input" value="1.35" min="0" max="20" step="0.05" oninput="calculate()">
+                        </div>
+                        <div>
+                            <span class="field-label">24h Fluid Output (L)</span>
+                            <input type="number" id="foOutputL" class="tiny-input" value="1.10" min="0" max="20" step="0.05" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="stacked-bar" aria-hidden="true">
+                            <div id="foMeterBar" class="bar-seg seg-3" style="width: 20.8%;"></div>
+                        </div>
+                        <div class="split-bar-labels">
+                            <span id="foFormulaText">[(1.35 - 1.10) / 12.0] &times; 100</span>
+                            <strong id="foPctOut" style="color:var(--text-main);">+2.08% FO (Target &lt;5%)</strong>
+                        </div>
+                    </div>
+                    <div id="cap24hWarning" class="cap-alert hidden"></div>
+                </div>
+            </div>
+
+            <!-- SUBTAB 4: PPS 2024 Part 2 Unique Conditions (DKA, Liver, AKI, TLS, Pneumonia) -->
+            <div id="subtabUnique" class="hidden" style="display:flex;flex-direction:column;gap:8px;">
+                <div>
+                    <span class="field-label">Select PPS Part 2 Condition Module</span>
+                    <select id="uniqueCondSelect" class="tiny-select" onchange="calculate()">
+                        <option value="dka">1. Hyperglycemic / DKA (Sec. 1)</option>
+                        <option value="liver">2. Jaundiced / Liver Disease (Sec. 2)</option>
+                        <option value="aki">3. Oliguric / AKI &amp; Polyuria (Sec. 3)</option>
+                        <option value="tls">4. Oncologic / TLS &amp; Rasburicase (Sec. 4)</option>
+                        <option value="pneumonia">5. Tachypneic / Pneumonia (Sec. 5)</option>
+                    </select>
+                </div>
+
+                <!-- 1. DKA Panel -->
+                <div id="panelDka" class="detail-box">
+                    <div class="mini-grid-3">
+                        <div>
+                            <span class="field-label">Na+ (mmol/L)</span>
+                            <input type="number" id="dkaNa" class="tiny-input" value="132" step="1" oninput="calculate()">
+                        </div>
+                        <div>
+                            <span class="field-label">Glucose (mg/dL)</span>
+                            <input type="number" id="dkaGlu" class="tiny-input" value="450" step="10" oninput="calculate()">
+                        </div>
+                        <div>
+                            <span class="field-label">Cl- + HCO3-</span>
+                            <input type="number" id="dkaClHco3" class="tiny-input" value="110" step="1" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div class="mini-grid-2">
+                        <div>
+                            <span class="field-label">DKA Severity Deficit</span>
+                            <select id="dkaSev" class="tiny-select" onchange="calculate()">
+                                <option value="5">Mild DKA (5% deficit)</option>
+                                <option value="7" selected>Moderate DKA (7% deficit)</option>
+                                <option value="10">Severe DKA (10% deficit)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span class="field-label">Duration (24–48h)</span>
+                            <select id="dkaHours" class="tiny-select" onchange="calculate()">
+                                <option value="24" selected>24 Hours</option>
+                                <option value="48">48 Hours</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span><strong>Corrected Na+ / Osm / Anion Gap:</strong></span>
+                        <strong id="dkaLabsOut">Corr Na: 137.6 | Osm: 289.0 | AG: 22.0</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span><strong>DKA Fluids (Def + Maint - 10 mL/kg Bolus):</strong></span>
+                        <strong id="dkaFluidOut">1,820 mL over 24h (75.8 mL/hr) | Insulin: 0.6–1.2 U/hr</strong>
+                    </div>
+                </div>
+
+                <!-- 2. Jaundiced / Liver Disease Panel -->
+                <div id="panelLiver" class="detail-box hidden">
+                    <div class="mini-grid-2">
+                        <div>
+                            <span class="field-label">Liver Subtype</span>
+                            <select id="liverType" class="tiny-select" onchange="calculate()">
+                                <option value="alf" selected>Acute Liver Failure (90% Maint)</option>
+                                <option value="cld3">Chronic Liver + Gr. 3 Tense Ascites</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span class="field-label">Dry Weight (kg, for Ascites)</span>
+                            <input type="number" id="dryWtInput" class="tiny-input" value="12" min="1" max="200" step="0.5" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span><strong>Liver Fluid / Paracentesis Order:</strong></span>
+                        <strong id="liverOut">90% Maint = 990 mL/d | Na 2–3 mEq/kg/d (24–36 mEq) | +15 mEq K+/L</strong>
+                    </div>
+                </div>
+
+                <!-- 3. Oliguric / AKI & Polyuria Panel -->
+                <div id="panelAki" class="detail-box hidden">
+                    <div class="mini-grid-2">
+                        <div>
+                            <span class="field-label">AKI Phase</span>
+                            <select id="akiPhase" class="tiny-select" onchange="calculate()">
+                                <option value="oliguric" selected>Oliguric Restriction (400 mL/m&sup2; + Loss)</option>
+                                <option value="polyuria">Polyuria (&gt;2000 mL/m&sup2;/d or &gt;2.5–3 mL/kg/h)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span class="field-label">Measured Urine Output (mL)</span>
+                            <input type="number" id="akiUopMl" class="tiny-input" value="120" min="0" max="5000" step="10" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span><strong>AKI Fluid &amp; Furosemide (2 mg/kg, max 200mg):</strong></span>
+                        <strong id="akiOut">IWL (400/m&sup2;) + UOP | Furosemide: 24 mg</strong>
+                    </div>
+                </div>
+
+                <!-- 4. Oncologic / TLS Panel -->
+                <div id="panelTls" class="detail-box hidden">
+                    <div class="mini-grid-2">
+                        <div>
+                            <span class="field-label">TLS Risk Profile</span>
+                            <select id="tlsRisk" class="tiny-select" onchange="calculate()">
+                                <option value="high">High Risk (UA &gt;7.5 mg/dL: 0.20 mg/kg)</option>
+                                <option value="inter" selected>Intermediate (UA &lt;7.5: 0.18 mg/kg)</option>
+                                <option value="low">Low Risk (UA &lt;7.5: 0.10 mg/kg)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span class="field-label">Hydration Target (L/m&sup2;/day)</span>
+                            <input type="number" id="tlsHydRate" class="tiny-input" value="2.5" min="2" max="3" step="0.5" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span><strong>TLS Hydration, Allopurinol &amp; Rasburicase:</strong></span>
+                        <strong id="tlsOut">Hydration: 1,350 mL/d | Allopurinol: 120 mg/d (div q8h) | Rasburicase: 2.16 mg</strong>
+                    </div>
+                </div>
+
+                <!-- 5. Tachypneic / Pneumonia Panel -->
+                <div id="panelPneumonia" class="detail-box hidden">
+                    <div>
+                        <span class="field-label">Maintenance Restriction (PPS Sec. 5.2 &amp; 5.3: 65–80% H-S)</span>
+                        <select id="pneuRestrictPct" class="tiny-select" onchange="calculate()">
+                            <option value="0.65">65% of Holliday-Segar Maintenance</option>
+                            <option value="0.725" selected>72.5% (Midpoint 65–80%) of H-S</option>
+                            <option value="0.80">80% of Holliday-Segar Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="detail-row">
+                        <span><strong>Restricted Pneumonia Maintenance (Isotonic IVF):</strong></span>
+                        <strong id="pneuOut">798 mL/day (33.2 mL/hr)</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Post-Resuscitation IVF & Electrolyte Checklist -->
+        <section class="section-card">
+            <div class="section-header">
+                <span class="section-title">3. Post-Resuscitation IVF &amp; Electrolyte Checklist</span>
+                <span class="section-sub">CPG Fig. 2 / p. 8</span>
+            </div>
+            <div class="order-list">
+                <label class="order-item">
+                    <input type="checkbox" id="ordIvf" checked>
+                    <span>Use isotonic / high-Na maintenance IVF (&ge; D5 0.45% NaCl or at least 77 mEq/L Na+; avoid hypotonic fluids).</span>
+                </label>
+                <label class="order-item">
+                    <input type="checkbox" id="ordKcl" checked>
+                    <span>Incorporate <strong>20 mEq KCl/L</strong> into maintenance IVF only after confirming adequate urine output.</span>
+                </label>
+                <label class="order-item">
+                    <input type="checkbox" id="ordReassess" checked>
+                    <span>Reassess hydration status every 1–2 hours (or q15–30 min in severe dehydration); repeat bolus if radial pulse remains weak/absent.</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Action Footer -->
+        <footer class="footer-actions">
+            <button type="button" id="copyBtn" class="copy-btn" onclick="copyComputation()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span id="copyBtnText">Copy Clinical Summary</span>
+            </button>
+            <button type="button" class="clear-btn" onclick="clearInput()">Reset</button>
+        </footer>
+    </main>
+
+    <script>
+        let ageGroup = 'child'; // 'infant' (<12m), 'child' (1-10y), 'adolescent' (>10y)
+        let severityOverride = 'auto'; // 'auto', 'none', 'mild', 'severe'
+        let activeSubtab = 'hsIwl'; // 'hsIwl', 'ludanBsa', 'deficit', 'unique'
+
+        const weightInput = document.getElementById('weightInput');
+        const heightInput = document.getElementById('heightInput');
+
+        function fmt(num, decimals = 0) {
+            if (!isFinite(num) || isNaN(num)) return '0';
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        }
+
+        function setSubtab(tab) {
+            activeSubtab = tab;
+            document.getElementById('tabBtnHsIwl').classList.toggle('active', tab === 'hsIwl');
+            document.getElementById('tabBtnLudanBsa').classList.toggle('active', tab === 'ludanBsa');
+            document.getElementById('tabBtnDeficit').classList.toggle('active', tab === 'deficit');
+            document.getElementById('tabBtnUnique').classList.toggle('active', tab === 'unique');
+
+            document.getElementById('subtabHsIwl').classList.toggle('hidden', tab !== 'hsIwl');
+            document.getElementById('subtabLudanBsa').classList.toggle('hidden', tab !== 'ludanBsa');
+            document.getElementById('subtabDeficit').classList.toggle('hidden', tab !== 'deficit');
+            document.getElementById('subtabUnique').classList.toggle('hidden', tab !== 'unique');
+            calculate();
+        }
+
+        function setAgeGroup(group) {
+            ageGroup = group;
+            document.getElementById('ageInfant').classList.toggle('active', group === 'infant');
+            document.getElementById('ageChild').classList.toggle('active', group === 'child');
+            document.getElementById('ageAdol').classList.toggle('active', group === 'adolescent');
+            calculate();
+        }
+
+        function setSeverityOverride(mode) {
+            severityOverride = mode;
+            document.getElementById('ovAuto').classList.toggle('active', mode === 'auto');
+            document.getElementById('ovNone').classList.toggle('active', mode === 'none');
+            document.getElementById('ovMild').classList.toggle('active', mode === 'mild');
+            document.getElementById('ovSevere').classList.toggle('active', mode === 'severe');
+            calculate();
+        }
+
+        function clearSigns() {
+            document.querySelectorAll('.signs-table input[type="checkbox"]').forEach(cb => cb.checked = false);
+            setSeverityOverride('auto');
+        }
+
+        function clearInput() {
+            weightInput.value = '';
+            heightInput.value = '';
+            clearSigns();
+            calculate();
+            weightInput.focus();
+        }
+
+        function getWeightKg() {
+            const raw = parseFloat(weightInput.value);
+            if (isNaN(raw) || raw <= 0) return 0;
+            return raw;
+        }
+
+        function evaluateClinicalSigns() {
+            const checked = Array.from(document.querySelectorAll('.signs-table input[type="checkbox"]:checked'));
+            let mildCount = 0;
+            let severeCount = 0;
+            const selectedLabels = [];
+
+            checked.forEach(cb => {
+                if (cb.dataset.cat === 'mild') mildCount++;
+                if (cb.dataset.cat === 'severe') severeCount++;
+                selectedLabels.push(`${cb.dataset.param}: ${cb.value}`);
+            });
+
+            // CPG Table 1 Rule:
+            // "If the patient has two or more signs, there is MILD to MODERATE DEHYDRATION."
+            // "If the patient has two or more signs, there is SEVERE DEHYDRATION."
+            let autoLevel = 'none';
+            if (severeCount >= 2) {
+                autoLevel = 'severe';
+            } else if ((mildCount + severeCount) >= 2) {
+                autoLevel = 'mild';
+            }
+
+            const finalLevel = severityOverride === 'auto' ? autoLevel : severityOverride;
+            return { finalLevel, autoLevel, mildCount, severeCount, selectedLabels };
+        }
+
+        function computeFinbergLudan(weightKg) {
+            // PPS 2024 Part 1, Statement 3.1.4 Ludan (Modified Finberg) Basal Caloric Expenditure Method:
+            // 3-10 kg: 100 mL/kg/day
+            // 10-20 kg: 75 mL/kg/day
+            // 20-30 kg: 50-60 mL/kg/day (midpoint 55 mL/kg/day)
+            // 30-60 kg: 40-50 mL/kg/day (midpoint 45 mL/kg/day)
+            if (weightKg <= 0) return { daily: 0, rangeText: '0 mL/kg/day' };
+            if (weightKg <= 10) {
+                return { daily: weightKg * 100, rangeText: '3–10 kg: 100 mL/kg/d' };
+            }
+            if (weightKg <= 20) {
+                return { daily: weightKg * 75, rangeText: '10–20 kg: 75 mL/kg/d' };
+            }
+            if (weightKg <= 30) {
+                const low = weightKg * 50;
+                const high = weightKg * 60;
+                return { daily: (low + high) / 2, rangeText: `20–30 kg: 50–60 mL/kg (${fmt(low)}–${fmt(high)} mL)` };
+            }
+            const low = weightKg * 40;
+            const high = weightKg * 50;
+            return { daily: (low + high) / 2, rangeText: `30–60 kg: 40–50 mL/kg (${fmt(low)}–${fmt(high)} mL)` };
+        }
+
+        function computeIwlAdjustment(baselineDaily) {
+            let netPct = 0;
+            const parts = [];
+            if (document.getElementById('iwlHypervent').checked) {
+                const v = parseFloat(document.getElementById('iwlHyperventPct').value) || 0;
+                netPct += v;
+                parts.push(`+${v}% hypervent`);
+            }
+            if (document.getElementById('iwlActInc').checked) {
+                const v = parseFloat(document.getElementById('iwlActIncPct').value) || 0;
+                netPct += v;
+                parts.push(`+${v}% act`);
+            }
+            if (document.getElementById('iwlFever').checked) {
+                const deg = parseFloat(document.getElementById('iwlFeverDeg').value) || 0;
+                const v = deg * 12;
+                netPct += v;
+                parts.push(`+${fmt(v, 1)}% fever (${deg}°C x 12%)`);
+            }
+            if (document.getElementById('iwlHumid').checked) {
+                const v = parseFloat(document.getElementById('iwlHumidPct').value) || 0;
+                netPct -= v;
+                parts.push(`-${v}% humid`);
+            }
+            if (document.getElementById('iwlActDec').checked) {
+                const v = parseFloat(document.getElementById('iwlActDecPct').value) || 0;
+                netPct -= v;
+                parts.push(`-${v}% dec act`);
+            }
+            if (document.getElementById('iwlHypotherm').checked) {
+                const v = parseFloat(document.getElementById('iwlHypothermPct').value) || 0;
+                netPct -= v;
+                parts.push(`-${v}% hypotherm`);
+            }
+            if (document.getElementById('iwlSedation').checked) {
+                const v = parseFloat(document.getElementById('iwlSedationPct').value) || 0;
+                netPct -= v;
+                parts.push(`-${v}% sedat`);
+            }
+            const adjustedDaily = Math.max(0, baselineDaily * (1 + netPct / 100));
+            return { netPct, parts, adjustedDaily };
+        }
+
+        function calculate() {
+            const weightKg = getWeightKg();
+            const heightCm = parseFloat(heightInput.value) || 0;
+            const sex = document.getElementById('sexSelect').value;
+
+            // Anthropometrics readout
+            document.getElementById('convertedText').innerHTML =
+                `<strong>${fmt(weightKg, 2)} kg</strong>`;
+
+            // PPS 2024 Part 1, Statement 3.1.4 Crawford BSA formula: sqrt((weight(kg) * length(cm)) / 3600)
+            const bsa = (weightKg > 0 && heightCm > 0) ? Math.sqrt((weightKg * heightCm) / 3600) : 0;
+            document.getElementById('bsaReadout').innerHTML =
+                bsa > 0 ? `BSA: <strong>${fmt(bsa, 2)} m&sup2;</strong>` : `BSA: enter height`;
+
+            // Clinical Signs Evaluation
+            const signs = evaluateClinicalSigns();
+            const banner = document.getElementById('severityBanner');
+            banner.classList.remove('mild', 'severe');
+            if (signs.finalLevel === 'mild') banner.classList.add('mild');
+            if (signs.finalLevel === 'severe') banner.classList.add('severe');
+
+            const titles = {
+                none: 'NO SIGNS OF DEHYDRATION (Plan A)',
+                mild: 'MILD TO MODERATE DEHYDRATION (Plan B / Fig. 1)',
+                severe: 'SEVERE DEHYDRATION (Plan C / Fig. 2)'
+            };
+            document.getElementById('severityTitle').textContent = titles[signs.finalLevel];
+            document.getElementById('severitySubtitle').textContent =
+                `Checked signs: ${signs.severeCount} Severe, ${signs.mildCount} Mild-Mod (${severityOverride === 'auto' ? 'Auto CPG Rule' : 'Manual Override'}).`;
+
+            const hasMalnutrition = document.getElementById('chkMalnutrition').checked;
+            document.getElementById('malnutritionAlert').style.display = hasMalnutrition ? 'block' : 'none';
+
+            // Checklist Toggles
+            const incDeficit = document.getElementById('chkDeficit').checked;
+            const incRehyd = document.getElementById('chkRehydration').checked;
+            const incOngoing = document.getElementById('chkOngoing').checked;
+            const incMaint = document.getElementById('chkMaintenance').checked;
+            const incUnique = document.getElementById('chkUniqueCond').checked;
+
+            const useHs = document.getElementById('mHolliday').checked;
+            const useFl = document.getElementById('mFinberg').checked;
+            const useBsa = document.getElementById('mBsa').checked;
+
+            document.getElementById('maintMethodsRow').classList.toggle('hidden', !incMaint);
+
+            // Auto-open Unique tab if checklist is toggled on
+            if (incUnique && activeSubtab !== 'unique') {
+                setSubtab('unique');
+            }
+
+            // 1. Estimated Fluid Deficit (PPS 3.1.3: Mild 50/30 mL/kg, Moderate 100/60 mL/kg, Severe 150/90 mL/kg)
+            const cardDeficit = document.getElementById('cardDeficit');
+            cardDeficit.classList.toggle('hidden', !incDeficit);
+
+            let deficitMlPerKg = 0;
+            let deficitSub = '';
+            if (ageGroup === 'infant') {
+                deficitMlPerKg = signs.finalLevel === 'none' ? 50 : (signs.finalLevel === 'mild' ? 100 : 150);
+                deficitSub = `Infant (<12m) ${signs.finalLevel === 'none' ? 'Mild (3–5%)' : signs.finalLevel === 'mild' ? 'Mod (6–10%)' : 'Severe (9–15%)'}: ${deficitMlPerKg} mL/kg`;
+            } else {
+                deficitMlPerKg = signs.finalLevel === 'none' ? 30 : (signs.finalLevel === 'mild' ? 60 : 90);
+                deficitSub = `Child/Adol ${signs.finalLevel === 'none' ? 'Mild (3–5%)' : signs.finalLevel === 'mild' ? 'Mod (6–10%)' : 'Severe (9–15%)'}: ${deficitMlPerKg} mL/kg`;
+            }
+            const deficitVolNum = weightKg * deficitMlPerKg;
+            document.getElementById('deficitVolDisplay').textContent = fmt(deficitVolNum);
+            document.getElementById('deficitSubDisplay').textContent = deficitSub;
+
+            // 2. Rehydration Phase (Fig. 1 & Fig. 2)
+            const cardRehyd = document.getElementById('cardRehydration');
+            cardRehyd.classList.toggle('hidden', !incRehyd);
+
+            const protocolBadge = document.getElementById('protocolBadge');
+            const phase1Row = document.getElementById('rehydPhase1Row');
+            const phase2Row = document.getElementById('rehydPhase2Row');
+            phase1Row.classList.toggle('hidden', !incRehyd);
+
+            if (signs.finalLevel === 'none') {
+                document.getElementById('rehydLabel').textContent = 'Rehydration Plan (Fig. 1)';
+                document.getElementById('rehydVolDisplay').textContent = 'ORS Only';
+                document.getElementById('rehydUnitDisplay').textContent = '';
+                document.getElementById('rehydSubDisplay').textContent = 'No dehydration: replace ongoing stool losses';
+
+                protocolBadge.textContent = 'Outpatient / Plan A';
+                protocolBadge.style.background = 'var(--mint-bg)';
+                protocolBadge.style.color = 'var(--mint-accent)';
+                protocolBadge.style.borderColor = 'var(--mint-border)';
+
+                document.getElementById('phase1Label').innerHTML = '<strong>Rehydration (No Signs):</strong> Reduced-osmolarity ORS';
+                document.getElementById('phase1Val').textContent = 'No deficit bolus needed';
+                phase2Row.classList.add('hidden');
+            } else if (signs.finalLevel === 'mild') {
+                const vol4hr = weightKg * 75;
+                const rate4hr = vol4hr / 4;
+                document.getElementById('rehydLabel').textContent = '4-Hr Rehydration (Fig. 1)';
+                document.getElementById('rehydVolDisplay').textContent = fmt(vol4hr);
+                document.getElementById('rehydUnitDisplay').textContent = 'mL / 4 hrs';
+                document.getElementById('rehydSubDisplay').textContent = `75 mL/kg over 4 hrs (${fmt(rate4hr, 1)} mL/hr) ORS/NGT/IV`;
+
+                protocolBadge.textContent = '4-Hr ORS / NGT / IV';
+                protocolBadge.style.background = 'var(--peach-bg)';
+                protocolBadge.style.color = 'var(--peach-accent)';
+                protocolBadge.style.borderColor = 'var(--peach-border)';
+
+                document.getElementById('phase1Label').innerHTML = '<strong>4-Hr Rehydration (75 mL/kg):</strong> ORS or LRS/0.9% NaCl';
+                document.getElementById('phase1Val').textContent = `${fmt(vol4hr)} mL over 4 hrs (${fmt(rate4hr, 1)} mL/hr)`;
+                phase2Row.classList.add('hidden');
+            } else {
+                const total100 = weightKg * 100;
+                const phase1Vol = weightKg * 30;
+                const phase2Vol = weightKg * 70;
+                const isInfant = ageGroup === 'infant';
+
+                const p1DurationText = isInfant ? '1 hour' : '30 minutes';
+                const p1Rate = isInfant ? phase1Vol : phase1Vol * 2;
+                const p2DurationText = isInfant ? '5 hours' : '2.5 hours';
+                const p2Rate = isInfant ? phase2Vol / 5 : phase2Vol / 2.5;
+                const totalHrs = isInfant ? '6 hrs' : '3 hrs';
+
+                document.getElementById('rehydLabel').textContent = `Rapid IV Bolus (${totalHrs})`;
+                document.getElementById('rehydVolDisplay').textContent = fmt(total100);
+                document.getElementById('rehydUnitDisplay').textContent = 'mL LRS/NSS';
+                document.getElementById('rehydSubDisplay').textContent = `100 mL/kg split: 30 mL/kg (${p1DurationText}) + 70 mL/kg (${p2DurationText})`;
+
+                protocolBadge.textContent = `Severe IV (${totalHrs})`;
+                protocolBadge.style.background = 'var(--rose-bg)';
+                protocolBadge.style.color = 'var(--rose-accent)';
+                protocolBadge.style.borderColor = 'var(--rose-border)';
+
+                document.getElementById('phase1Label').innerHTML = `<strong>Phase 1 (30 mL/kg over ${p1DurationText}):</strong> LRS or 0.9% NaCl`;
+                document.getElementById('phase1Val').textContent = `${fmt(phase1Vol)} mL (${fmt(p1Rate, 1)} mL/hr)`;
+
+                phase2Row.classList.toggle('hidden', !incRehyd);
+                document.getElementById('phase2Label').innerHTML = `<strong>Phase 2 (70 mL/kg over ${p2DurationText}):</strong> LRS or 0.9% NaCl`;
+                document.getElementById('phase2Val').textContent = `${fmt(phase2Vol)} mL (${fmt(p2Rate, 1)} mL/hr)`;
+            }
+
+            // 3. Ongoing Stool Losses (PPS 4.1.1: <2y 50-100mL, 2-10y 100-200mL, >=10y ad libitum)
+            const ongoingRow = document.getElementById('ongoingRow');
+            ongoingRow.classList.toggle('hidden', !incOngoing);
+            document.getElementById('protocolSection').classList.toggle('hidden', !incRehyd && !incOngoing);
+
+            const stoolCount = Math.max(0, parseInt(document.getElementById('stoolCountInput').value, 10) || 0);
+            if (ageGroup === 'infant') {
+                document.getElementById('ongoingRuleText').textContent = '50–100 mL ORS per loose stool (<2 yrs)';
+                document.getElementById('ongoingTotalVal').textContent = `${fmt(stoolCount * 50)}–${fmt(stoolCount * 100)} mL`;
+            } else if (ageGroup === 'child') {
+                document.getElementById('ongoingRuleText').textContent = '100–200 mL ORS per loose stool (2–10 yrs)';
+                document.getElementById('ongoingTotalVal').textContent = `${fmt(stoolCount * 100)}–${fmt(stoolCount * 200)} mL`;
+            } else {
+                document.getElementById('ongoingRuleText').textContent = 'As much as desired (ad libitum) per loose stool (≥10 yrs)';
+                document.getElementById('ongoingTotalVal').textContent = 'Ad libitum';
+            }
+
+            // 4. Maintenance Fluids & IWL Adjustments
+            const t1Kg = Math.min(weightKg, 10);
+            const t2Kg = weightKg > 10 ? Math.min(weightKg - 10, 10) : 0;
+            const t3Kg = weightKg > 20 ? weightKg - 20 : 0;
+
+            const d1 = t1Kg * 100;
+            const d2 = t2Kg * 50;
+            const d3 = t3Kg * 20;
+            const dailyTotal = d1 + d2 + d3;
+
+            const h1 = t1Kg * 4;
+            const h2 = t2Kg * 2;
+            const h3 = t3Kg * 1;
+            const hourly421 = h1 + h2 + h3;
+
+            const iwl = computeIwlAdjustment(dailyTotal);
+            const applyCap = document.getElementById('chkApply24hCap').checked;
+            const maxCap24h = sex === 'male' ? 2500 : 2000;
+            const cappedDaily = applyCap ? Math.min(iwl.adjustedDaily, maxCap24h) : iwl.adjustedDaily;
+            const wasCapped = applyCap && iwl.adjustedDaily > maxCap24h;
+            const hourlyAdj = cappedDaily / 24;
+
+            document.getElementById('cardDaily').classList.toggle('hidden', !incMaint || !useHs);
+            document.getElementById('cardHourly').classList.toggle('hidden', !incMaint || !useHs);
+
+            const dailyDecimals = cappedDaily % 1 === 0 ? 0 : 1;
+            document.getElementById('dailyCardLabel').textContent = iwl.netPct !== 0 ? 'Adj. 24h Maint (H-S)' : '24-Hr Maintenance (H-S)';
+            document.getElementById('dailyTotalDisplay').textContent = fmt(cappedDaily, dailyDecimals);
+            document.getElementById('kcalDisplay').textContent = wasCapped
+                ? `Capped at ${fmt(maxCap24h)} mL (${sex}) from ${fmt(iwl.adjustedDaily, 0)} mL`
+                : `${fmt(dailyTotal, 0)} kcal/day baseline${iwl.netPct !== 0 ? ` (${iwl.netPct >= 0 ? '+' : ''}${fmt(iwl.netPct, 1)}% IWL)` : ''}`;
+            document.getElementById('hourly421Display').textContent = fmt(iwl.netPct !== 0 ? hourlyAdj : hourly421, 1);
+            document.getElementById('hourlyExactDisplay').textContent = `4-2-1 base: ${fmt(hourly421, 1)} mL/hr | 24h/24: ${fmt(cappedDaily / 24, 1)} mL/hr`;
+
+            // IWL UI updates
+            const netSign = iwl.netPct >= 0 ? '+' : '';
+            document.getElementById('iwlNetBadge').textContent = `Net: ${netSign}${fmt(iwl.netPct, 1)}%`;
+            document.getElementById('iwlCalcFormula').textContent =
+                `Adj H-S: ${fmt(dailyTotal, 0)} mL/d x (1 ${netSign}${fmt(iwl.netPct / 100, 2)})${iwl.parts.length ? ` [${iwl.parts.join(', ')}]` : ''}`;
+            document.getElementById('iwlAdjustedResult').textContent =
+                `${fmt(cappedDaily, dailyDecimals)} mL/day (${fmt(cappedDaily / 24, 1)} mL/hr)`;
+
+            // Comparison Boxes (Tab 2)
+            document.getElementById('boxHolliday').classList.toggle('hidden', !useHs);
+            document.getElementById('cmpHsVal').textContent = `${fmt(dailyTotal, 0)} mL/day`;
+            document.getElementById('cmpHsSub').textContent = `${fmt(hourly421, 1)} mL/hr (4-2-1 rule)`;
+
+            const fl = computeFinbergLudan(weightKg);
+            document.getElementById('boxFinberg').classList.toggle('hidden', !useFl);
+            document.getElementById('cmpFlVal').textContent = `${fmt(fl.daily, 0)} mL/day`;
+            document.getElementById('cmpFlSub').textContent = `${fmt(fl.daily / 24, 1)} mL/hr (${fl.rangeText})`;
+
+            // Visual Ludan Bracket Highlight & Breakdown Table
+            const activeLudanIdx = weightKg <= 0 ? 0 : (weightKg <= 10 ? 1 : (weightKg <= 20 ? 2 : (weightKg <= 30 ? 3 : 4)));
+            [1, 2, 3, 4].forEach(idx => {
+                const isAct = idx === activeLudanIdx;
+                document.getElementById(`ludanBrk${idx}`).classList.toggle('active', isAct);
+                document.getElementById(`ludanRow${idx}`).style.background = isAct ? 'var(--lavender-bg)' : 'transparent';
+                document.getElementById(`ludanEq${idx}`).innerHTML = '&mdash;';
+                document.getElementById(`ludanVal${idx}`).innerHTML = '&mdash;';
+            });
+            document.getElementById('ludanActiveBadge').textContent = fl.rangeText;
+            document.getElementById('ludanTableTotal').textContent = `${fmt(fl.daily, 0)} mL/d (${fmt(fl.daily / 24, 1)}/h)`;
+            if (activeLudanIdx === 1) {
+                document.getElementById('ludanEq1').textContent = `${fmt(weightKg, 2)} kg x 100`;
+                document.getElementById('ludanVal1').textContent = `${fmt(fl.daily, 0)} mL (${fmt(fl.daily / 24, 1)}/h)`;
+                document.getElementById('ludanRangeBound').textContent = '3–10 kg flat rate';
+            } else if (activeLudanIdx === 2) {
+                document.getElementById('ludanEq2').textContent = `${fmt(weightKg, 2)} kg x 75`;
+                document.getElementById('ludanVal2').textContent = `${fmt(fl.daily, 0)} mL (${fmt(fl.daily / 24, 1)}/h)`;
+                document.getElementById('ludanRangeBound').textContent = '10–20 kg flat rate';
+            } else if (activeLudanIdx === 3) {
+                document.getElementById('ludanEq3').textContent = `${fmt(weightKg, 2)} kg x 50–60`;
+                document.getElementById('ludanVal3').textContent = `${fmt(weightKg * 50, 0)}–${fmt(weightKg * 60, 0)} mL`;
+                document.getElementById('ludanRangeBound').textContent = `Midpoint: ${fmt(fl.daily, 0)} mL/d`;
+            } else if (activeLudanIdx === 4) {
+                document.getElementById('ludanEq4').textContent = `${fmt(weightKg, 2)} kg x 40–50`;
+                document.getElementById('ludanVal4').textContent = `${fmt(weightKg * 40, 0)}–${fmt(weightKg * 50, 0)} mL`;
+                document.getElementById('ludanRangeBound').textContent = `Midpoint: ${fmt(fl.daily, 0)} mL/d`;
+            } else {
+                document.getElementById('ludanRangeBound').textContent = 'Enter weight';
+            }
+
+            const bsaDaily = bsa * 1500;
+            document.getElementById('boxBsa').classList.toggle('hidden', !useBsa);
+            document.getElementById('cmpBsaVal').textContent = bsa > 0 ? `${fmt(bsaDaily, 0)} mL/day` : 'Enter height';
+            document.getElementById('cmpBsaSub').textContent = bsa > 0
+                ? `${fmt(bsaDaily / 24, 1)} mL/hr (BSA ${fmt(bsa, 2)} m²)`
+                : '1500 mL/m²/day';
+
+            // Visual Crawford BSA Pipeline & Ratio Bar
+            const bsaRatioPct = (dailyTotal > 0 && bsa > 0) ? Math.min(100, (bsaDaily / dailyTotal) * 100) : 0;
+            document.getElementById('bsaPctOfHsBadge').textContent = bsa > 0 ? `${fmt(bsaRatioPct, 0)}% of H-S` : 'Needs Height';
+            document.getElementById('bsaStepIn').textContent = `${fmt(weightKg, 1)} kg x ${fmt(heightCm, 0)} cm`;
+            document.getElementById('bsaStepVal').textContent = bsa > 0 ? `${fmt(bsa, 2)} m²` : '— m²';
+            document.getElementById('bsaStepOut').textContent = bsa > 0 ? `${fmt(bsaDaily, 0)} mL/d (${fmt(bsaDaily / 24, 1)}/h)` : 'Enter height';
+            document.getElementById('bsaRatioBar').style.width = `${bsaRatioPct}%`;
+            document.getElementById('bsaVsHsLabel').textContent = `vs. H-S ${fmt(dailyTotal, 0)} mL/d`;
+            document.getElementById('bsaDetailText').textContent = bsa > 0
+                ? `BSA = sqrt((${fmt(weightKg, 1)} x ${fmt(heightCm, 1)}) / 3600) = ${fmt(bsa, 2)} m²`
+                : `Enter height (cm) to compute BSA and 1500 mL/m²/day`;
+
+            // Tier Bar & Table (Tab 1)
+            document.getElementById('tierSummaryLabel').textContent =
+                `${fmt(t1Kg, t1Kg % 1 === 0 ? 0 : 1)} + ${fmt(t2Kg, t2Kg % 1 === 0 ? 0 : 1)} + ${fmt(t3Kg, t3Kg % 1 === 0 ? 0 : 1)} kg`;
+
+            if (weightKg > 0) {
+                document.getElementById('barSeg1').style.width = `${(t1Kg / weightKg) * 100}%`;
+                document.getElementById('barSeg2').style.width = `${(t2Kg / weightKg) * 100}%`;
+                document.getElementById('barSeg3').style.width = `${(t3Kg / weightKg) * 100}%`;
+            } else {
+                document.getElementById('barSeg1').style.width = '0%';
+                document.getElementById('barSeg2').style.width = '0%';
+                document.getElementById('barSeg3').style.width = '0%';
+            }
+
+            document.getElementById('t1Hint').textContent = `${fmt(t1Kg, 2)} kg x 100 / x 4`;
+            document.getElementById('t1Daily').textContent = `${fmt(d1, d1 % 1 === 0 ? 0 : 1)} mL`;
+            document.getElementById('t1Hourly').textContent = `${fmt(h1, 1)} mL/hr`;
+
+            document.getElementById('t2Hint').textContent = `${fmt(t2Kg, 2)} kg x 50 / x 2`;
+            document.getElementById('t2Daily').textContent = `${fmt(d2, d2 % 1 === 0 ? 0 : 1)} mL`;
+            document.getElementById('t2Hourly').textContent = `${fmt(h2, 1)} mL/hr`;
+
+            document.getElementById('t3Hint').textContent = `${fmt(t3Kg, 2)} kg x 20 / x 1`;
+            document.getElementById('t3Daily').textContent = `${fmt(d3, d3 % 1 === 0 ? 0 : 1)} mL`;
+            document.getElementById('t3Hourly').textContent = `${fmt(h3, 1)} mL/hr`;
+
+            document.getElementById('tableDailyTotal').textContent = `${fmt(dailyTotal, 0)} mL/day`;
+            document.getElementById('tableHourlyTotal').textContent = `${fmt(hourly421, 1)} mL/hr`;
+
+            // Tab 3: Pre-illness Weight, % Deficit, Split Schedules, Bolus, SBP & FO%
+            const preWt = parseFloat(document.getElementById('preWtInput').value) || 0;
+            const knownPctDef = parseFloat(document.getElementById('knownPctDefInput').value) || 0;
+            const ageYrs = parseFloat(document.getElementById('ageYearsInput').value) || 0;
+
+            const calcPctDef = (preWt > 0 && weightKg > 0) ? ((preWt - weightKg) / preWt) * 100 : 0;
+            const lossKg = preWt > weightKg ? preWt - weightKg : 0;
+            const admBarPct = preWt > 0 ? Math.max(0, Math.min(100, (weightKg / preWt) * 100)) : 100;
+            const lossBarPct = Math.max(0, 100 - admBarPct);
+
+            document.getElementById('deficitPctBadge').textContent = preWt > 0 ? `${fmt(calcPctDef, 1)}% Deficit` : 'No Pre-Wt';
+            document.getElementById('admWtBar').style.width = `${admBarPct}%`;
+            document.getElementById('lossWtBar').style.width = `${lossBarPct}%`;
+            document.getElementById('admWtBarLabel').textContent = `Admission Wt: ${fmt(weightKg, 2)} kg (${fmt(admBarPct, 1)}%)`;
+            document.getElementById('lossWtBarLabel').textContent = `Water Loss: ${fmt(lossKg, 2)} kg (${fmt(lossBarPct, 1)}%)`;
+
+            document.getElementById('calcPctDeficitFormula').textContent =
+                preWt > 0 ? `(${fmt(preWt, 1)} - ${fmt(weightKg, 1)}) / ${fmt(preWt, 1)} x 100` : 'Enter pre-illness wt';
+            document.getElementById('calcPctDeficitOut').textContent =
+                preWt > 0 ? `${fmt(calcPctDef, 1)}%` : '—';
+
+            const derivedPreWt = (weightKg > 0 && knownPctDef > 0 && knownPctDef < 100)
+                ? (weightKg * 100) / (100 - knownPctDef)
+                : 0;
+            document.getElementById('derivedPreWtFormula').textContent =
+                derivedPreWt > 0 ? `${fmt(weightKg, 1)} x 100 / (100 - ${fmt(knownPctDef, 1)})` : 'Enter % deficit < 100';
+            document.getElementById('derivedPreWtOut').textContent =
+                derivedPreWt > 0 ? `${fmt(derivedPreWt, 2)} kg` : '—';
+
+            document.getElementById('clinDefFormula').textContent = `${fmt(weightKg, 1)} kg x ${deficitMlPerKg} mL/kg`;
+            document.getElementById('clinDefOut').textContent = `${fmt(deficitVolNum, 0)} mL`;
+
+            // Statement 3.1.3.1: 50% of net deficit + 1/3 maintenance in first 8h, remainder in next 16h
+            const halfDef = 0.5 * deficitVolNum;
+            const oneThirdMaint = dailyTotal / 3;
+            const twoThirdMaint = (2 * dailyTotal) / 3;
+            const first8h = halfDef + oneThirdMaint;
+            const next16h = halfDef + twoThirdMaint;
+            const total24hCombined = first8h + next16h;
+            const pct8h = total24hCombined > 0 ? (first8h / total24hCombined) * 100 : 37.5;
+            const pct16h = 100 - pct8h;
+
+            document.getElementById('total24hDefMaintBadge').textContent = `24h Total: ${fmt(total24hCombined, 0)} mL`;
+            document.getElementById('split8hBar').style.width = `${pct8h}%`;
+            document.getElementById('split16hBar').style.width = `${pct16h}%`;
+            document.getElementById('split8hBarLabel').textContent = `1st 8h (50% Def + 1/3 Maint): ${fmt(pct8h, 0)}%`;
+            document.getElementById('split16hBarLabel').textContent = `Next 16h (50% Def + 2/3 Maint): ${fmt(pct16h, 0)}%`;
+
+            document.getElementById('split8hMath').textContent = `${fmt(halfDef, 0)} + ${fmt(oneThirdMaint, 0)} = ${fmt(first8h, 0)} mL`;
+            document.getElementById('split8hRate').textContent = `${fmt(first8h / 8, 1)} mL/hr`;
+            document.getElementById('split16hMath').textContent = `${fmt(halfDef, 0)} + ${fmt(twoThirdMaint, 0)} = ${fmt(next16h, 0)} mL`;
+            document.getElementById('split16hRate').textContent = `${fmt(next16h / 16, 1)} mL/hr`;
+
+            // Statement 3.1.3.2: Rapid 6h AGE deficit
+            const oneThirdDef = deficitVolNum / 3;
+            const twoThirdsDef = (2 * deficitVolNum) / 3;
+            document.getElementById('rapid6hMath').textContent = `1/3 (1h): ${fmt(oneThirdDef, 0)} mL + 2/3 (5–6h): ${fmt(twoThirdsDef, 0)} mL`;
+            document.getElementById('rapid6hOut').textContent = `${fmt(oneThirdDef, 0)} -> ${fmt(twoThirdsDef / 6, 0)}–${fmt(twoThirdsDef / 5, 0)} mL/h`;
+
+            // Statement 2.1, 2.8, 2.9: Bolus 20 mL/kg (max 60 mL/kg/h), SBP 5th percentile: 70 + (2 x age in yrs), >=90 if >=10 yrs
+            const bolus20 = weightKg * 20;
+            const bolusMax1h = weightKg * 60;
+            const sbpTarget = ageYrs >= 10 ? 90 : (70 + (2 * ageYrs));
+            document.getElementById('bolusMath').textContent = `20 mL/kg (max 60/kg/h = ${fmt(bolusMax1h, 0)} mL)`;
+            document.getElementById('bolusSbpOut').textContent = `${fmt(bolus20, 0)} mL | SBP >= ${fmt(sbpTarget, 0)} mmHg`;
+
+            // Fluid Overload %: FO% = [(Fluid input - Fluid output in L) / Admission weight in kg] * 100
+            const foInL = parseFloat(document.getElementById('foInputL').value) || 0;
+            const foOutL = parseFloat(document.getElementById('foOutputL').value) || 0;
+            const foPct = weightKg > 0 ? ((foInL - foOutL) / weightKg) * 100 : 0;
+            const foBar = document.getElementById('foMeterBar');
+            foBar.style.width = `${Math.max(0, Math.min(100, (Math.max(0, foPct) / 10) * 100))}%`;
+            foBar.style.background = foPct >= 10 ? 'var(--rose-accent)' : (foPct >= 5 ? '#f5a36b' : 'var(--tier3-color)');
+            document.getElementById('foFormulaText').textContent = `[(${fmt(foInL, 2)} - ${fmt(foOutL, 2)}) / ${fmt(weightKg, 1)}] x 100`;
+            document.getElementById('foPctOut').textContent =
+                `${foPct >= 0 ? '+' : ''}${fmt(foPct, 2)}% FO (${foPct >= 5 ? 'Overload >=5%' : 'Normal <5%'})`;
+
+            const capWarn = document.getElementById('cap24hWarning');
+            if (wasCapped || (sex === 'male' && iwl.adjustedDaily > 2500) || (sex === 'female' && iwl.adjustedDaily > 2000)) {
+                capWarn.classList.remove('hidden');
+                capWarn.textContent = `PPS 5.1.4 24h Cap (${sex === 'male' ? 'Male: 2,500 mL' : 'Female: 2,000 mL'}): Computed ${fmt(iwl.adjustedDaily, 0)} mL ${applyCap ? 'capped to' : 'exceeds'} ${fmt(maxCap24h)} mL.`;
+            } else {
+                capWarn.classList.add('hidden');
+            }
+
+            // Tab 4: PPS 2024 Part 2 Unique Conditions
+            const cond = document.getElementById('uniqueCondSelect').value;
+            document.getElementById('panelDka').classList.toggle('hidden', cond !== 'dka');
+            document.getElementById('panelLiver').classList.toggle('hidden', cond !== 'liver');
+            document.getElementById('panelAki').classList.toggle('hidden', cond !== 'aki');
+            document.getElementById('panelTls').classList.toggle('hidden', cond !== 'tls');
+            document.getElementById('panelPneumonia').classList.toggle('hidden', cond !== 'pneumonia');
+
+            // 1. DKA: Corr Na = Na + 1.6 * ((Glu - 100)/100); Osm = 2*Na + (Glu/18); AG = Na - (Cl+HCO3)
+            const dkaNa = parseFloat(document.getElementById('dkaNa').value) || 0;
+            const dkaGlu = parseFloat(document.getElementById('dkaGlu').value) || 0;
+            const dkaClHco3 = parseFloat(document.getElementById('dkaClHco3').value) || 0;
+            const dkaSevPct = parseFloat(document.getElementById('dkaSev').value) || 7;
+            const dkaHrs = parseFloat(document.getElementById('dkaHours').value) || 24;
+
+            const corrNa = dkaGlu > 100 ? dkaNa + 1.6 * ((dkaGlu - 100) / 100) : dkaNa;
+            const gluMmol = dkaGlu / 18;
+            const osm = (2 * dkaNa) + gluMmol;
+            const ag = dkaNa - dkaClHco3;
+            const dkaInitBolus = weightKg * 10;
+            const dkaDeficit = weightKg * (dkaSevPct * 10);
+            const dkaTotalFluid = Math.max(0, dkaDeficit + dailyTotal - dkaInitBolus);
+            const dkaRate = dkaTotalFluid / dkaHrs;
+            const insLow = weightKg * 0.05;
+            const insHigh = weightKg * 0.1;
+
+            document.getElementById('dkaLabsOut').textContent =
+                `Corr Na: ${fmt(corrNa, 1)} | Osm: ${fmt(osm, 1)} mOsm/L | AG: ${fmt(ag, 1)}`;
+            document.getElementById('dkaFluidOut').textContent =
+                `${fmt(dkaTotalFluid, 0)} mL/${dkaHrs}h (${fmt(dkaRate, 1)} mL/h after ${fmt(dkaInitBolus, 0)} bolus) | Drip: ${fmt(insLow, 2)}–${fmt(insHigh, 2)} U/hr`;
+
+            // 2. Liver Disease (ALF 90% maint + 15 mEq K+/L + 2-3 mEq Na/kg/d; CLD Gr 3 ascites >=50 mL/kg dry wt paracentesis + 1g/kg albumin over 4h)
+            const liverType = document.getElementById('liverType').value;
+            const dryWt = parseFloat(document.getElementById('dryWtInput').value) || weightKg;
+            if (liverType === 'alf') {
+                const alf90 = dailyTotal * 0.9;
+                document.getElementById('liverOut').textContent =
+                    `90% Maint = ${fmt(alf90, 0)} mL/d (${fmt(alf90 / 24, 1)} mL/h) | Na: ${fmt(weightKg * 2, 0)}–${fmt(weightKg * 3, 0)} mEq/d | +15 mEq K+/L`;
+            } else {
+                document.getElementById('liverOut').textContent =
+                    `Paracentesis ≥ ${fmt(dryWt * 50, 0)} mL (50 mL/kg dry wt) + Albumin ${fmt(dryWt * 1, 1)} g over 4h`;
+            }
+
+            // 3. Oliguric / AKI & Polyuria (Insensible = 400 mL/m2 BSA; Furosemide 2 mg/kg max 200 mg)
+            const akiPhase = document.getElementById('akiPhase').value;
+            const akiUop = parseFloat(document.getElementById('akiUopMl').value) || 0;
+            const furoDose = Math.min(weightKg * 2, 200);
+            const iwl400 = bsa > 0 ? bsa * 400 : 0;
+            if (akiPhase === 'oliguric') {
+                const restrTotal = iwl400 + akiUop;
+                document.getElementById('akiOut').textContent = bsa > 0
+                    ? `400/m² (${fmt(iwl400, 0)}) + UOP (${fmt(akiUop, 0)}) = ${fmt(restrTotal, 0)} mL/d | Furosemide: ${fmt(furoDose, 1)} mg`
+                    : `Enter height for 400 mL/m² BSA + UOP | Furosemide: ${fmt(furoDose, 1)} mg`;
+            } else {
+                const polyBase = bsa > 0 ? bsa * 400 : dailyTotal * 0.325;
+                document.getElementById('akiOut').textContent =
+                    `Insensible/25–40% (~${fmt(polyBase, 0)} mL) + UOP vol/vol q1–4h (${fmt(akiUop, 0)} mL) | Furosemide: ${fmt(furoDose, 1)} mg`;
+            }
+
+            // 4. Oncologic / TLS (Hydration 2-3 L/m2/d; Allopurinol 100 mg/m2 q8h or 10 mg/kg/d div q8h; Rasburicase 0.20 / 0.18 / 0.10 mg/kg)
+            const tlsRisk = document.getElementById('tlsRisk').value;
+            const tlsRate = parseFloat(document.getElementById('tlsHydRate').value) || 2.5;
+            const rasbMgKg = tlsRisk === 'high' ? 0.20 : (tlsRisk === 'inter' ? 0.18 : 0.10);
+            const rasbDose = weightKg * rasbMgKg;
+            const alloByWt = weightKg * 10;
+            const alloByBsa = bsa > 0 ? bsa * 100 * 3 : 0;
+            document.getElementById('tlsOut').textContent = bsa > 0
+                ? `Hydr: ${fmt(bsa * tlsRate * 1000, 0)} mL/d | Allo: ${fmt(alloByWt, 0)} mg/d (${fmt(alloByBsa, 0)}/m²) | Rasb: ${fmt(rasbDose, 2)} mg`
+                : `Enter height for BSA hydration | Allo (10 mg/kg/d): ${fmt(alloByWt, 0)} mg/d | Rasb: ${fmt(rasbDose, 2)} mg`;
+
+            // 5. Tachypneic / Pneumonia (65-80% of Holliday-Segar maintenance)
+            const pneuFactor = parseFloat(document.getElementById('pneuRestrictPct').value) || 0.725;
+            const pneuDaily = dailyTotal * pneuFactor;
+            document.getElementById('pneuOut').textContent =
+                `${fmt(pneuDaily, 0)} mL/day (${fmt(pneuDaily / 24, 1)} mL/hr) at ${fmt(pneuFactor * 100, 1)}% H-S`;
+        }
+
+        function copyComputation() {
+            const weightKg = getWeightKg();
+            const heightCm = parseFloat(heightInput.value) || 0;
+            const bsa = (weightKg > 0 && heightCm > 0) ? Math.sqrt((weightKg * heightCm) / 3600) : 0;
+            const signs = evaluateClinicalSigns();
+            const t1 = Math.min(weightKg, 10);
+            const t2 = weightKg > 10 ? Math.min(weightKg - 10, 10) : 0;
+            const t3 = weightKg > 20 ? weightKg - 20 : 0;
+            const dTot = t1 * 100 + t2 * 50 + t3 * 20;
+            const hTot = t1 * 4 + t2 * 2 + t3 * 1;
+            const iwl = computeIwlAdjustment(dTot);
+            const fl = computeFinbergLudan(weightKg);
+
+            const lines = [
+                `PPS 2024 (2nd Ed.) & CPG v2 Pediatric Fluid Summary`,
+                `Patient: ${weightKg.toFixed(2)} kg | Age: ${ageGroup === 'infant' ? '<12 mos' : ageGroup === 'child' ? '1-10 yrs' : '>10 yrs'} | Sex: ${document.getElementById('sexSelect').value}${bsa > 0 ? ` | BSA: ${bsa.toFixed(2)} m²` : ''}`,
+                `Dehydration Status: ${document.getElementById('severityTitle').textContent}`
+            ];
+
+            if (signs.selectedLabels.length > 0) {
+                lines.push(`Checked Signs: ${signs.selectedLabels.join('; ')}`);
+            }
+            if (document.getElementById('chkMalnutrition').checked) {
+                lines.push(`WARNING: Severe malnutrition present (clinical dehydration signs may be unreliable).`);
+            }
+            if (document.getElementById('chkDeficit').checked) {
+                lines.push(`- Deficit: ${document.getElementById('deficitVolDisplay').textContent} mL (${document.getElementById('deficitSubDisplay').textContent})`);
+            }
+            if (document.getElementById('chkRehydration').checked) {
+                lines.push(`- Rehydration / Bolus: ${document.getElementById('rehydVolDisplay').textContent} ${document.getElementById('rehydUnitDisplay').textContent} (${document.getElementById('rehydSubDisplay').textContent})`);
+            }
+            if (document.getElementById('chkOngoing').checked) {
+                lines.push(`- Ongoing Losses: ${document.getElementById('ongoingRuleText').textContent} | Est: ${document.getElementById('ongoingTotalVal').textContent}`);
+            }
+            if (document.getElementById('chkMaintenance').checked) {
+                lines.push(`- Holliday-Segar Base: ${dTot.toFixed(0)} mL/day | ${hTot.toFixed(1)} mL/hr (4-2-1)`);
+                if (iwl.netPct !== 0) {
+                    lines.push(`- IWL Adjusted (${iwl.netPct >= 0 ? '+' : ''}${iwl.netPct.toFixed(1)}%): ${iwl.adjustedDaily.toFixed(0)} mL/day (${(iwl.adjustedDaily / 24).toFixed(1)} mL/hr)`);
+                }
+                lines.push(`- Ludan/Mod. Finberg: ${fl.daily.toFixed(0)} mL/day (${fl.rangeText})`);
+                if (bsa > 0) {
+                    const bsaD = bsa * 1500;
+                    lines.push(`- Crawford BSA (1500/m²/d): ${bsaD.toFixed(0)} mL/day (${(bsaD / 24).toFixed(1)} mL/hr)`);
+                }
+            }
+            if (document.getElementById('chkResusCap').checked) {
+                lines.push(`- ${document.getElementById('bolusSbpOut').textContent}`);
+                lines.push(`- Fluid Overload: ${document.getElementById('foPctOut').textContent}`);
+            }
+            if (document.getElementById('chkUniqueCond').checked) {
+                const cond = document.getElementById('uniqueCondSelect').value;
+                if (cond === 'dka') lines.push(`- DKA: ${document.getElementById('dkaLabsOut').textContent} | ${document.getElementById('dkaFluidOut').textContent}`);
+                if (cond === 'liver') lines.push(`- Liver: ${document.getElementById('liverOut').textContent}`);
+                if (cond === 'aki') lines.push(`- AKI/UOP: ${document.getElementById('akiOut').textContent}`);
+                if (cond === 'tls') lines.push(`- TLS: ${document.getElementById('tlsOut').textContent}`);
+                if (cond === 'pneumonia') lines.push(`- Pneumonia: ${document.getElementById('pneuOut').textContent}`);
+            }
+
+            const ta = document.createElement('textarea');
+            ta.value = lines.join('\n');
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                const btn = document.getElementById('copyBtn');
+                const btnText = document.getElementById('copyBtnText');
+                btn.classList.add('copied');
+                btnText.textContent = 'Copied Summary!';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btnText.textContent = 'Copy Clinical Summary';
+                }, 1800);
+            } catch (e) {}
+            document.body.removeChild(ta);
+        }
+
+        weightInput.addEventListener('input', calculate);
+        heightInput.addEventListener('input', calculate);
+        window.addEventListener('DOMContentLoaded', calculate);
+    </script>
+</body>
+</html>
